@@ -23,7 +23,7 @@ def login_user(login_request: LoginRequest, response: Response, db: Session = De
         samesite="lax",
         max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "Bearer"}
 
 
 @router.post("/register", response_model=UserOut)
@@ -47,7 +47,7 @@ def logout_user(response: Response, db: Session = Depends(get_db), current_user:
 
 
 @router.post("/refresh-token", response_model=dict)
-def refresh_token(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def refresh_token(request: Request, db: Session = Depends(get_db)):
     token_refresh = request.cookies.get("refresh_token")
     if not token_refresh:
         return {"error": "No refresh token found"}
@@ -55,10 +55,7 @@ def refresh_token(request: Request, db: Session = Depends(get_db), current_user:
     access_token = auth_service.refresh_token(db, token_refresh)
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/me")
+
+@router.get("/me", response_model=UserOut)
 def get_current_user_info(current_user: User = Depends(get_current_user)):
-    return {
-        "id": current_user.id,
-        "username": current_user.username,
-        "email": current_user.email
-    }
+    return current_user

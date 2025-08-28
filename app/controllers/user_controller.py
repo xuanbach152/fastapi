@@ -6,7 +6,7 @@ from app.models.user import User
 
 import app.services.user_service as user_service
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.put("/{user_id}", response_model=UserOut)
@@ -30,5 +30,4 @@ def get_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), cur
 @router.get("/{user_id}", response_model=UserOut)
 def get_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user = user_service.get_user(db, user_id)
-
     return user

@@ -15,21 +15,34 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
-    token = request.headers.get("Authorization")
-    if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
+    auth = request.headers.get("Authorization")
+    if not auth:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
 
-    if not token.startswith("Bearer "):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token format")
+    if not auth.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token format")
 
     try:
-        token = token[7:] 
-        username = verify_token(token)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+        token = auth[7:]
+        payload = verify_token(token)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail=f"Invalid or expired token :{str(e)}")
+    username = payload.get("username")
+    user_id = payload.get("sub")
 
-    user = db.query(User).filter(User.username == username).first()
+    if user_id:
+        user = db.query(User).filter(User.id == int(user_id)).first()
+    elif username:
+        user = db.query(User).filter(User.username == username).first()
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Token payload missing subject")
+
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     return user
