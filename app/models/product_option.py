@@ -6,5 +6,5 @@ class ProductOption(BaseModel):
     __tablename__ = "product_options"
 
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    option_id = Column(Integer, ForeignKey("options.id"), nullable=False)
+    option_type_id = Column(Integer, ForeignKey("option_types.id"), nullable=False)
 

@@ -6,7 +6,9 @@ from fastapi.staticfiles import StaticFiles
 from app.controllers.user_controller import router as user_router
 from app.controllers.auth_controller import router as auth_router
 from app.controllers.product_controller import router as product_router
-
+from app.controllers.option_type_controller import router as option_type_router
+from app.controllers.option_controller import router as option_router
+from app.controllers.product_option_controller import router as product_option_router
 
 from app.db.init_db import init_database
 
@@ -15,6 +17,9 @@ app = FastAPI()
 app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(product_router)
+app.include_router(option_type_router)
+app.include_router(option_router)
+app.include_router(product_option_router)
 
 app.mount("/image/product", StaticFiles(directory="app/image/product"), name="product_images")  
 
