@@ -9,6 +9,8 @@ from app.controllers.product_controller import router as product_router
 from app.controllers.option_type_controller import router as option_type_router
 from app.controllers.option_controller import router as option_router
 from app.controllers.product_option_controller import router as product_option_router
+from app.controllers.cart_controller import router as cart_router
+
 
 from app.db.init_db import init_database
 
@@ -20,6 +22,7 @@ app.include_router(product_router)
 app.include_router(option_type_router)
 app.include_router(option_router)
 app.include_router(product_option_router)
+app.include_router(cart_router)
 
 app.mount("/image/product", StaticFiles(directory="app/image/product"), name="product_images")  
 
